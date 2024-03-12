@@ -9,7 +9,6 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from handlers import router
 
 async def main():
-    #bot = Bot(token=config.BOT_TOKEN, parse_mode=ParseMode.HTML)
     bot = Bot(token="6197143528:AAFpKrDz8So7QPoOBk4NGQcNh4c3Cv7g7bs", parse_mode=ParseMode.HTML)
     dp = Dispatcher(storage=MemoryStorage())
     dp.include_router(router)
