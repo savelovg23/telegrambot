@@ -1,23 +1,37 @@
+# Здесь пока без комментариев ) Будут на следующем шаге
 from aiogram import F, Router, types
 from aiogram.filters import Command
 from aiogram.types import Message
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
+from aiogram.types.callback_query import CallbackQuery
+from aiogram.fsm.context import FSMContext
 
-import kb
-import text
+mainmenu = [
+    [InlineKeyboardButton(text="Моё расписание", callback_data="myshedule"),
+    InlineKeyboardButton(text="Настройка", callback_data="myoption")]
+]
+mainmenu = InlineKeyboardMarkup(inline_keyboard=mainmenu)
+exit_kb = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text="Выйти в меню")]], resize_keyboard=True)
 
 router = Router()
 
 @router.message(Command("start"))
 async def start_handler(msg: Message):
-    await msg.answer(text.greet.format(name=msg.from_user.full_name), reply_markup=kb.menu)
+    greet = "Привет, {name}, я бот, предоставляющий текущее расписание занятий в Алексеевском колледже️"
+    await msg.answer(greet.format(name=msg.from_user.full_name), reply_markup=mainmenu)
 
 @router.message(F.text == "/menu")
 @router.message(F.text == "Меню")
 @router.message(F.text == "Выйти в меню")
-@router.message(F.text == "◀️ Выйти в меню")
 async def menu(msg: Message):
-    await msg.answer(text.menu, reply_markup=kb.menu)
+    await msg.answer("Главное меню", reply_markup=mainmenu)
 
-@router.message(Command("group_list"))
-async def menu(msg: Message):
-    await msg.answer(text.menu, reply_markup=kb.menu)
+@router.callback_query(F.data == "myshedule")
+async def myoption(clbck: CallbackQuery, state: FSMContext):
+    await clbck.message.answer("Здесь будет Ваше расписание...", reply_markup=exit_kb)
+
+@router.callback_query(F.data == "myoption")
+async def myoption(clbck: CallbackQuery, state: FSMContext):
+    await clbck.message.answer("Здесь будут Ваши настрйки...", reply_markup=exit_kb)
+
+
