@@ -6,6 +6,8 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardBu
 from aiogram.types.callback_query import CallbackQuery
 from aiogram.fsm.context import FSMContext
 
+import urllib.request
+
 mainmenu = [
     [InlineKeyboardButton(text="Моё расписание", callback_data="myshedule"),
     InlineKeyboardButton(text="Настройка", callback_data="myoption")]
@@ -28,7 +30,11 @@ async def menu(msg: Message):
 
 @router.callback_query(F.data == "myshedule")
 async def myoption(clbck: CallbackQuery, state: FSMContext):
-    await clbck.message.answer("Здесь будет Ваше расписание...", reply_markup=exit_kb)
+    fp = urllib.request.urlopen("http://alcol.deltabest.ru/shedule/api/forgroup/?group=1411")
+    mybytes = fp.read()
+    shedule_html = mybytes.decode("utf8")
+    fp.close()
+    await clbck.message.answer(shedule_html[0:1000], reply_markup=exit_kb)
 
 @router.callback_query(F.data == "myoption")
 async def myoption(clbck: CallbackQuery, state: FSMContext):
